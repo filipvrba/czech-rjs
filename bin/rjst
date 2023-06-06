@@ -1,0 +1,7 @@
+#!/bin/env ruby
+
+APP_NAME = File.basename($0)
+ROOT = File.expand_path("..", __dir__)
+$: << File.join(ROOT, 'lib')
+
+require 'rjst'
