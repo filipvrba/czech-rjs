@@ -2,5 +2,8 @@ import '../css/bootstrap.min.css'
 import '../css/style.css'
 
 import './elements'
+import 'OpenAI', './third-side/openai'
+
+window.openai = OpenAI.new
 
 document.querySelector('#app').innerHTML = '<elm-app></elm-app>'

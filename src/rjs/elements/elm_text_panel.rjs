@@ -3,18 +3,26 @@ export default class ElmTextPanel < HTMLElement
 
   def initialize
     super
-    
+    @raw_text_input = lambda { check_btn_correct_visibility() }
+
     init_elm()
 
     window.btn_correct_click = btn_correct_click
     @raw_text = document.getElementById('rawText')
     @correctedText = document.getElementById('correctedText')
+    @btnCorrect = document.getElementById('btnCorrect')
+    @btnCorrectSpinner = document.getElementById('btnCorrectSpinner')
+    @btnCorrectText = document.getElementById('btnCorrectText')
+
+    check_btn_correct_visibility()
   end
 
   def connectedCallback()
+    @raw_text.addEventListener('input', @raw_text_input)
   end
 
   def disconnectedCallback()
+    @raw_text.removeEventListener('input', @raw_text_input)
   end
 
   def init_elm()
@@ -38,7 +46,10 @@ export default class ElmTextPanel < HTMLElement
               </div>
             </div>
             <div class='d-grid gap-2'>
-              <button class='btn btn-primary' onclick='btn_correct_click()'>Correct</button>
+              <button class='btn btn-primary' id='btnCorrect' type='button' onclick='btn_correct_click()'>
+                <span class='spinner-grow spinner-grow-sm d-none' id='btnCorrectSpinner' role='status' aria-hidden='true'></span>
+                <span id='btnCorrectText'>Correct</span>
+              </button>
             </div>
           </div>
         </div>
@@ -50,6 +61,41 @@ export default class ElmTextPanel < HTMLElement
   end
 
   def btn_correct_click()
+    btn_correct_state(1)
 
+    openai.send_message(
+      "The text should be in Czech. " +
+      "The text should be grammatically correct. " +
+      "Text should be representative of blog posts. " +
+      "Here is the text: \"#{@raw_text.value}\""
+    ) do |text|
+      @correctedText.value = text.trimLeft()
+      btn_correct_state()
+    end
+  end
+
+  def btn_correct_state(state = 0)
+    case state
+    when 1
+      btnCorrect.disabled = true
+      btnCorrectSpinner.classList.remove('d-none')
+      btnCorrectText.innerText = 'Correction...'
+    when 2
+      btnCorrect.disabled = true
+      btnCorrectSpinner.classList.add('d-none')
+      btnCorrectText.innerText = 'Correct'
+    else
+      btnCorrect.disabled = false
+      btnCorrectSpinner.classList.add('d-none')
+      btnCorrectText.innerText = 'Correct'
+    end
+  end
+
+  def check_btn_correct_visibility()
+    if @raw_text.value.length > 0
+      btn_correct_state()
+    else
+      btn_correct_state(2)
+    end
   end
 end

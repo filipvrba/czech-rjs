@@ -1,0 +1,27 @@
+import ['Configuration', 'OpenAIApi'], 'openai'
+import ['ENV'], '../env'
+
+export default class OpenAI
+  attr_reader :api
+
+  def initialize(model = 'text-davinci-003')
+    configuration = Configuration.new({
+      organization: "org-NiaVQxVDeuy4oJH7TvUT4W6A",
+      apiKey: ENV::VITE_OPENAI_API_KEY,
+      })
+    @api = OpenAIApi.new(configuration)
+    @model = model
+  end
+
+  def send_message(message = "none", &block)
+    completion = {
+      model: @model,
+      prompt: message,
+      max_tokens: Math.round(message.length / 2)
+    }
+    @api.createCompletion(completion).then(lambda do |response|
+      console.log response.data
+      block(response.data.choices[0].text) if block
+    end)
+  end
+end
