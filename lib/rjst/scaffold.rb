@@ -4,6 +4,8 @@ module RJST
 
     def create_element(name, &block)
       name_class = name.split(/[_-]/).map(&:capitalize).join
+      name_file = name.gsub('-', '_')
+      name_element = name.gsub('_', '-')
 
       scaffold_element_rjs = """
 export default class Elm#{name_class} < HTMLElement
@@ -28,11 +30,11 @@ export default class Elm#{name_class} < HTMLElement
 end
       """.strip
       scaffold_init_rjs = """
-import 'Elm#{name_class}', './elements/elm_#{name.downcase}'
-window.customElements.define('elm-#{name.downcase}', Elm#{name_class})
+import 'Elm#{name_class}', './elements/elm_#{name_file}'
+window.customElements.define('elm-#{name_element}', Elm#{name_class})
       """.strip
 
-      path_scaffold_element = File.join(Dir.pwd, 'src/rjs/elements', "elm_#{name.downcase}.rjs")
+      path_scaffold_element = File.join(Dir.pwd, 'src/rjs/elements', "elm_#{name_file}.rjs")
       path_scaffold_init = File.join(Dir.pwd, 'src/rjs/elements.rjs')
       files = {
         path_scaffold_element => scaffold_element_rjs,
@@ -41,11 +43,10 @@ window.customElements.define('elm-#{name.downcase}', Elm#{name_class})
 
       files.each do |path, content|
         Content.write_to_file(path, content)
-        block.call("The '.#{path.sub(Dir.pwd(), '')}' file has been modified.") if block
+        block.call("Modified '.#{path.sub(Dir.pwd(), '')}'") if block
       end
 
-      block.call("The scaffold was launched under the name of " +
-                 "'elm-#{name.downcase}' element.") if block
+      block.call("Element 'elm-#{name_element}'") if block
     end
   end
 end

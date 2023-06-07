@@ -1,0 +1,4 @@
+import 'ElmTextPanel', './elements/elm_text_panel'
+window.customElements.define('elm-text-panel', ElmTextPanel)
+import 'ElmApp', './elements/elm_app'
+window.customElements.define('elm-app', ElmApp)

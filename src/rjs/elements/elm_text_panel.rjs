@@ -1,0 +1,55 @@
+export default class ElmTextPanel < HTMLElement
+  ROWS = 15
+
+  def initialize
+    super
+    
+    init_elm()
+
+    window.btn_correct_click = btn_correct_click
+    @raw_text = document.getElementById('rawText')
+    @correctedText = document.getElementById('correctedText')
+  end
+
+  def connectedCallback()
+  end
+
+  def disconnectedCallback()
+  end
+
+  def init_elm()
+    template = """
+    <div class='row'>
+      <div class=''>
+        <div class='card'>
+          <div class='card-body'>
+            <div class='row'>
+              <div class='col-md-6'>
+                <div class='mb-3'>
+                  <label for='rawText' class='form-label'>Raw Text</label>
+                  <textarea class='form-control' id='rawText' rows='#{ROWS}' style='resize: none;'></textarea>
+                </div>
+              </div>
+              <div class='col-md-6'>
+                <div class='mb-3'>
+                  <label for='correctedText' class='form-label'>Corrected Text</label>
+                  <textarea readonly class='form-control' id='correctedText' rows='#{ROWS}' style='resize: none;'></textarea>
+                </div>
+              </div>
+            </div>
+            <div class='d-grid gap-2'>
+              <button class='btn btn-primary' onclick='btn_correct_click()'>Correct</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    """
+
+    self.innerHTML = template
+  end
+
+  def btn_correct_click()
+
+  end
+end
